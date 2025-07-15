@@ -20,6 +20,14 @@ export class CrudController {
     return respuesta.status(HttpStatus.OK).json({ process: true });
   }
 
+  @Get('getUsers')
+  async getUsers(@Res() respuesta) {
+    const users = await this.crudService.users();
+    return respuesta.status(HttpStatus.OK).json({
+      users
+    });
+  }
+
   @Post('login')
   async login(@Res() respuesta, @Body() inputData) {
     const isUser = await this.crudService.login(inputData);
@@ -44,7 +52,17 @@ export class CrudController {
 
   @Get('myList/:id')
   async myList(@Res() respuesta, @Param('id') userID) {
-    const r = await this.crudService.buyList(userID);
+    const r = await this.crudService.myList(userID);
+    if(!r) {
+      return respuesta.status(HttpStatus.OK).json({ process: false });
+    }
+
+    return respuesta.status(HttpStatus.OK).json({ process: true, lista: r });
+  }
+
+  @Get('myListToBuy/:id')
+  async myListToBuy(@Res() respuesta, @Param('id') userID) {
+    const r = await this.crudService.myListToBuy(userID);
     if(!r) {
       return respuesta.status(HttpStatus.OK).json({ process: false });
     }

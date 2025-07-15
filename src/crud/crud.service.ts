@@ -7,13 +7,18 @@ import { User } from '../base_datos/users.schema';
 @Injectable()
 export class CrudService {
   constructor(
-    @InjectModel('users') private readonly userModel: Model<User>,
-    @InjectModel('games') private readonly gamesModel: Model<Game>
+    @InjectModel('users_s') private readonly userModel: Model<User>,
+    @InjectModel('games_s') private readonly gamesModel: Model<Game>
   ){}
 
   async register(inputData: any) {
     const outputData = await this.userModel.create(inputData);
     return await outputData.save();
+  }
+
+  async users() {
+    const users = await this.userModel.find();
+    return users;
   }
 
   async isUser(email) {
@@ -68,10 +73,24 @@ export class CrudService {
     const lista = lt?.toBuy;
 
     lista?.forEach(async obj => {
-      await this.userModel.findByIdAndUpdate(userID, { $push: { bought: obj } }, { new: true });
+      await this.userModel.findByIdAndUpdate(userID, { $push: { bought: obj }, toBuy: [] }, { new: true });
     });
 
     return true;
+  }
+
+  async myListToBuy(userID) {
+    const user = await this.userModel.findById(userID);
+    const lista = user?.toBuy;
+    var games: {}[] = [];
+    if(lista != undefined) {
+      for(let i = 0; i < lista.length; i++) {
+        const v = await this.gamesModel.findById(lista[i]);
+        games.push({title:v?.name, price: v?.price, tax: v?.tax});
+      }
+    }
+
+    return games;
   }
 
 }

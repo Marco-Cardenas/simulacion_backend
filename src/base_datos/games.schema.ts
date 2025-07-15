@@ -20,6 +20,9 @@ export class Game {
   @Prop()
   tax: number;
 
+  @Prop()
+  img: string;
+
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game);
